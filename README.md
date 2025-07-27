@@ -1,12 +1,41 @@
-# yoga-pose-accuracy-detector
+# Yoga Pose Accuracy Detector
 
-Installation Instructions
+This project uses **MediaPipe** and **OpenCV** to detect human pose landmarks from images or webcam input. It is designed to help identify and visualize yoga poses in real time.
 
-If there are issues with media pipe versions, create a conda environment:
-1. `conda create -n yoga-env python=3.9 -y`
-2. `conda activate mediapipe-env`
-3. `pip install mediapipe numpy scikit-learn matplotlib`
-4. `conda deactivate`
+---
+
+## 🔧 Setup Instructions (Virtual Environment)
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/yoga-pose-accuracy-detector.git
+cd yoga-pose-accuracy-detector
+```
 
 
+### 2. Create and Activate a Virtual Environment
+#### MacOS: 
+```bash
+python3.10 -m venv mp-env
+source mp-env/bin/activate
+```
 
+#### Windows
+```bash
+python -m venv mp-env
+mp-env\Scripts\activate
+```
+
+#### Install Dependencies 
+```bash
+pip install --upgrade pip
+pip install mediapipe opencv-python matplotlib
+```
+
+### 3. Running Scripts 
+```bash
+python image.py
+python webcam.py
+```
+Press Q to quit
