@@ -10,7 +10,7 @@ min_tracking_confidence=0.7)
 
 
 # Read image
-img = cv2.imread("test_image.png")  # default: BGR with 3 channels
+img = cv2.imread("training-data/downward_dog_1.png")  # default: BGR with 3 channels
 
 # Convert from BGR to RGB as mediapipe (mp) expects RGB input. 
 img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
