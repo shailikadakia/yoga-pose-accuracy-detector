@@ -1,0 +1,6 @@
+# Virtual Environments
+.env/
+.venv/
+env/
+venv/
+mp-env/
