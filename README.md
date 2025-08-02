@@ -37,5 +37,6 @@ pip install mediapipe opencv-python matplotlib
 ```bash
 python image.py
 python webcam.py
+python load_yoga_training_data.py
 ```
 Press Q to quit
