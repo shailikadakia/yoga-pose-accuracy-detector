@@ -5,6 +5,7 @@ import matplotlib.image as pimg
 import json
 import os 
 from glob import glob
+from utils import normalize_landmarks
 
 # Establish paths
 input_root = "training-data"
@@ -31,16 +32,7 @@ for pose_folder in os.listdir(input_root):
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = mp_pose.process(img_rgb)
     if results.pose_landmarks: 
-      keypoints = []
-      for landmark in results.pose_landmarks.landmark:
-        keypoints.append(
-          {
-          "x" : round(landmark.x, 6),
-          "y": round(landmark.y, 6),
-          "z": round(landmark.z, 6),
-          "visibility": round(landmark.visibility, 6)
-          })
-        
+      keypoints = normalize_landmarks(results.pose_landmarks.landmark)
       data = {
         "label": label,
         "landmarks": keypoints
