@@ -30,7 +30,7 @@ mp-env\Scripts\activate
 #### Install Dependencies 
 ```bash
 pip install --upgrade pip
-pip install mediapipe opencv-python matplotlib scikit-learn
+pip install mediapipe opencv-python matplotlib scikit-learn seaborn
 ```
 
 ### 3. Running Scripts 

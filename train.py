@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np # take list of data and convert it into an array
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt 
+import seaborn as sns 
+
 
 data = pd.read_csv("pose_dataset.csv")
 data.info()
@@ -17,7 +19,8 @@ def preprocess_data(dataframe):
 
 data = preprocess_data(data)
 X = data.drop(columns=["label"])
-Y = data["label"]
+label_encoder = LabelEncoder()
+Y = label_encoder.fit_transform(data["label"])
 # Create Features / Target Variables (Make Flashcards)
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
 
@@ -40,7 +43,7 @@ def tune_model(X_train, Y_train):
     "weights": ["uniform", "distance"]
   }
   model = KNeighborsClassifier()
-  grid_search = GridSearchCV(model, param_grid, cv=3, n_jobs=-1)
+  grid_search = GridSearchCV(model, param_grid, cv=2, n_jobs=-1)
   grid_search.fit(X_train, Y_train)
   return grid_search.best_estimator_
 
@@ -50,9 +53,14 @@ best_model = tune_model(X_train, Y_train)
 
 # Predictions and Evaluate
 def evaluate_model(model, X_test, Y_test):
+  label_encoder.inverse_transform([0, 1, 2, 3, 4, 7])
   prediction = model.predict(X_test)
-  prediction = classification_report(Y_test, prediction)
-  return prediction
+  report = classification_report(Y_test, prediction)
+  confusion = confusion_matrix(Y_test, prediction)
+  return report, confusion
 
-report = evaluate_model(best_model, X_test, Y_test)
-print(report)
+
+prediction, confusion = evaluate_model(best_model, X_test, Y_test)
+print("Prediction:", prediction)
+print("Confusion", confusion)
+
