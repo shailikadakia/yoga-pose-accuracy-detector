@@ -3,10 +3,10 @@ import numpy as np # take list of data and convert it into an array
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt 
 import seaborn as sns 
-
+import joblib
 
 data = pd.read_csv("pose_dataset.csv")
 data.info()
@@ -22,7 +22,7 @@ X = data.drop(columns=["label"])
 label_encoder = LabelEncoder()
 Y = label_encoder.fit_transform(data["label"])
 # Create Features / Target Variables (Make Flashcards)
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=42)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=42, stratify=Y)
 
 # ML Preprocessing
 scalar = MinMaxScaler()
@@ -49,18 +49,33 @@ def tune_model(X_train, Y_train):
 
 # Going forward, this is the best model 
 best_model = tune_model(X_train, Y_train)
+scaler = scalar
+label_encoder = label_encoder
 
+joblib.dump(best_model, "knn_model.pkl")
+joblib.dump(scaler, "scaler.pkl")
+joblib.dump(label_encoder, "label_encoder.pkl")
 
 # Predictions and Evaluate
 def evaluate_model(model, X_test, Y_test):
-  label_encoder.inverse_transform([0, 1, 2, 3, 4, 7])
   prediction = model.predict(X_test)
-  report = classification_report(Y_test, prediction)
-  confusion = confusion_matrix(Y_test, prediction)
+  Y_pred_labels = label_encoder.inverse_transform(prediction)
+  Y_test_labels = label_encoder.inverse_transform(Y_test)
+  report = classification_report(Y_test_labels, Y_pred_labels, zero_division=0)
+  confusion = confusion_matrix(Y_test_labels, Y_pred_labels, labels=label_encoder.classes_)
   return report, confusion
-
 
 prediction, confusion = evaluate_model(best_model, X_test, Y_test)
 print("Prediction:", prediction)
 print("Confusion", confusion)
 
+print(data['label'].value_counts())
+
+ConfusionMatrixDisplay.from_estimator(
+    best_model,
+    X_test,
+    Y_test,
+    display_labels=label_encoder.classes_,  # These are your pose names
+    xticks_rotation='vertical'
+)
+plt.show()

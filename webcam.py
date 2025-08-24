@@ -1,6 +1,14 @@
 import cv2
 import mediapipe as mp
 
+import numpy as np
+import joblib
+
+# Load your trained components
+best_model = joblib.load("knn_model.pkl")         # Save your model as knn_model.pkl
+scaler = joblib.load("scaler.pkl")                # Save your scaler as scaler.pkl
+label_encoder = joblib.load("label_encoder.pkl")  # Save your label encoder
+
 # Initialize MediaPipe pose and drawing utilities
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
@@ -43,9 +51,18 @@ with mp_pose.Pose(min_detection_confidence=0.9, min_tracking_confidence=0.7) as 
             )
 
         # Display the frame
-        cv2.imshow('Pose Detection (Press Q to Quit)', frame_bgr)
+        landmarks = results.pose_landmarks.landmark
+        keypoints = np.array([[lm.x, lm.y, lm.z] for lm in landmarks]).flatten().reshape(1, -1)
 
-        # Break on pressing 'q' key
+    # Predict using the model
+        scaled = scaler.transform(keypoints)
+        prediction = best_model.predict(scaled)
+        pose_label = label_encoder.inverse_transform(prediction)[0]
+
+    # Show label on screen
+        cv2.putText(frame_bgr, f'Pose: {pose_label}', (10, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+                # Break on pressing 'q' key
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
