@@ -2,12 +2,12 @@ import os
 from PIL import Image
 
 input_folder = "convert_images"
-output_folder = "training-data/downward_dog"
+output_folder = "training-data/goddess"
 
 os.makedirs(output_folder, exist_ok=True)
 
 # 1. Find the highest existing index in the output folder
-existing_files = [f for f in os.listdir(output_folder) if f.startswith("downward_dog_") and f.endswith(".png")]
+existing_files = [f for f in os.listdir(output_folder) if f.startswith("goddess") and f.endswith(".png")]
 existing_indices = []
 
 for f in existing_files:
@@ -26,7 +26,7 @@ for filename in os.listdir(input_folder):
         img_path = os.path.join(input_folder, filename)
         img = Image.open(img_path).convert("RGB")
 
-        new_name = f"downward_dog_{counter}.png"
+        new_name = f"goddess{counter}.png"
         out_path = os.path.join(output_folder, new_name)
 
         img.save(out_path, "PNG")
