@@ -79,3 +79,20 @@ ConfusionMatrixDisplay.from_estimator(
     xticks_rotation='vertical'
 )
 plt.show()
+
+
+class_names = [
+    "boat", "bridge", "butterfly", "cat-cow", "cat", "chair", "childs_pose", 
+    "corpse", "cow", "crescent_high_lunge", "downward_dog", "eagle", 
+    "extended_side_angle", "forward_fold", "goddess", "half_boat", "halfway_lift", 
+    "high_lunge", "lotus", "low_lunge", "plank", "plough", "pyramid", "reverse_warrior", 
+    "seated_forward_bend", "side_plank", "sphinx", "table_top", "tree", 
+    "upward_facing_dog", "warrior_one", "warrior_three", "warrior_two"
+]
+
+# Confusion matrix (replace with yours)
+cm = confusion_matrix(Y_test, prediction)
+
+# Generate classification report
+report = classification_report(Y_test, prediction, target_names=class_names, digits=3)
+print(report)
