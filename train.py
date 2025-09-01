@@ -1,98 +1,79 @@
 import pandas as pd
-import numpy as np # take list of data and convert it into an array
+import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
-import matplotlib.pyplot as plt 
-import seaborn as sns 
+from sklearn.pipeline import Pipeline
+import matplotlib.pyplot as plt
 import joblib
 
+# -----------------------
+# Load & basic checks
+# -----------------------
 data = pd.read_csv("pose_dataset.csv")
-data.info()
-print(data.isnull().sum())
+print(data.info())
+print("Nulls per column:\n", data.isnull().sum())
 
-# Data Cleaning
-# To Do: Will the data be incomplete? Need to remove those rows 
-def preprocess_data(dataframe):
-  return dataframe
+# TODO: if you need to drop bad rows, do it inside this function
+def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
+    # e.g., df = df.dropna()
+    return df
 
 data = preprocess_data(data)
+
+# -----------------------
+# Features / Labels
+# -----------------------
 X = data.drop(columns=["label"])
-label_encoder = LabelEncoder()
-Y = label_encoder.fit_transform(data["label"])
-# Create Features / Target Variables (Make Flashcards)
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=42, stratify=Y)
+le = LabelEncoder()
+y = le.fit_transform(data["label"])
 
-# ML Preprocessing
-scalar = MinMaxScaler()
-# don't have data to scale yet, no training and testing data yet
-# X is front of the flashcard, Y is the back of the flashcard
-# Computer can see train flashcards when training (X_train, Y_train)
-# Then when testing the model, can only check X_test 
-
-X_train = scalar.fit_transform(X_train)
-X_test = scalar.transform(X_test)
-
-# Hyperparameter Tuning - KNN Model
-# Model will drop new data into the scatterplot and try to get the nearest neighbours 
-def tune_model(X_train, Y_train):
-  param_grid = {
-    "n_neighbors": range(1, 8), # 1  to 21 neighbors
-    "metric": ["euclidean", "manhattan", "minkowski"],
-    "weights": ["uniform", "distance"]
-  }
-  model = KNeighborsClassifier()
-  grid_search = GridSearchCV(model, param_grid, cv=2, n_jobs=-1)
-  grid_search.fit(X_train, Y_train)
-  return grid_search.best_estimator_
-
-# Going forward, this is the best model 
-best_model = tune_model(X_train, Y_train)
-scaler = scalar
-label_encoder = label_encoder
-
-joblib.dump(best_model, "knn_model.pkl")
-joblib.dump(scaler, "scaler.pkl")
-joblib.dump(label_encoder, "label_encoder.pkl")
-
-# Predictions and Evaluate
-def evaluate_model(model, X_test, Y_test):
-  prediction = model.predict(X_test)
-  Y_pred_labels = label_encoder.inverse_transform(prediction)
-  Y_test_labels = label_encoder.inverse_transform(Y_test)
-  report = classification_report(Y_test_labels, Y_pred_labels, zero_division=0)
-  confusion = confusion_matrix(Y_test_labels, Y_pred_labels, labels=label_encoder.classes_)
-  return report, confusion
-
-prediction, confusion = evaluate_model(best_model, X_test, Y_test)
-print("Prediction:", prediction)
-print("Confusion", confusion)
-
-print(data['label'].value_counts())
-
-ConfusionMatrixDisplay.from_estimator(
-    best_model,
-    X_test,
-    Y_test,
-    display_labels=label_encoder.classes_,  # These are your pose names
-    xticks_rotation='vertical'
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y
 )
+
+# -----------------------
+# Pipeline + GridSearch
+# -----------------------
+pipe = Pipeline([
+    ("scaler", MinMaxScaler()),
+    ("knn", KNeighborsClassifier())
+])
+
+param_grid = {
+    "knn__n_neighbors": range(1, 8),
+    "knn__metric": ["euclidean", "manhattan", "minkowski"],
+    "knn__weights": ["uniform", "distance"],
+}
+
+grid = GridSearchCV(pipe, param_grid, cv=3, n_jobs=-1)
+grid.fit(X_train, y_train)
+
+best_pipe = grid.best_estimator_
+print("Best params:", grid.best_params_)
+
+# -----------------------
+# Evaluate
+# -----------------------
+y_pred = best_pipe.predict(X_test)
+
+# Use the SAME encoder's classes for names
+target_names = le.classes_
+print(classification_report(y_test, y_pred, target_names=target_names, digits=3))
+
+cm = confusion_matrix(y_test, y_pred, labels=range(len(target_names)))
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=target_names)
+disp.plot(xticks_rotation="vertical", cmap="Blues")
+plt.tight_layout()
 plt.show()
 
+# -----------------------
+# Save bundle (pipeline + encoder)
+# -----------------------
+bundle = {"pipe": best_pipe, "label_encoder": le}
+joblib.dump(bundle, "pose_knn_bundle.pkl")
 
-class_names = [
-    "boat", "bridge", "butterfly", "cat-cow", "cat", "chair", "childs_pose", 
-    "corpse", "cow", "crescent_high_lunge", "downward_dog", "eagle", 
-    "extended_side_angle", "forward_fold", "goddess", "half_boat", "halfway_lift", 
-    "high_lunge", "lotus", "low_lunge", "plank", "plough", "pyramid", "reverse_warrior", 
-    "seated_forward_bend", "side_plank", "sphinx", "table_top", "tree", 
-    "upward_facing_dog", "warrior_one", "warrior_three", "warrior_two"
-]
-
-# Confusion matrix (replace with yours)
-cm = confusion_matrix(Y_test, prediction)
-
-# Generate classification report
-report = classification_report(Y_test, prediction, target_names=class_names, digits=3)
-print(report)
+# (Optional) sanity prints
+print("Encoder classes:", le.classes_)
+print("Classifier classes:", best_pipe.named_steps["knn"].classes_)  # indices expected by the KNN
