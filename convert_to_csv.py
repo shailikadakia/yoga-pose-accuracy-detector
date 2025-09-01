@@ -6,7 +6,7 @@ input_folder = "data"
 output_file = "pose_dataset.csv"
 
 all_rows = []
-header = [f"{axis}{i}" for i in range(33) for axis in ['x', 'y', 'z']] + ['label']
+header = [f"{axis}{i}" for i in range(33) for axis in ['x', 'y', 'z', 'visibility']] + ['label']
 
 for file in os.listdir(input_folder):
     if file.endswith(".json"):
@@ -14,7 +14,7 @@ for file in os.listdir(input_folder):
             data = json.load(f)
             row = []
             for lm in data['landmarks']:
-                row.extend([lm['x'], lm['y'], lm['z']])
+                row.extend([lm['x'], lm['y'], lm['z'], lm['visibility']])
             row.append(data['label'])
             all_rows.append(row)
 
