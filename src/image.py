@@ -12,7 +12,7 @@ mp_pose = mp.solutions.pose.Pose(
   )
 # where the min_detection_conficence and min_tracking_confidence are the minimum threshold values for detecting the pose
 
-image_path = "training-data/cat/cat_1.png"
+image_path = "../training-data/cat/cat_1.png"
 
 def detect_image(image_path):
     # Read image
