@@ -7,7 +7,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
 
-def detect_pose(image, display=True):
+def detect_pose(image, display=True, return_results=False):
     if image is None:   
         raise ValueError("Image is None. Check your path/filename.")
 
@@ -54,6 +54,8 @@ def detect_pose(image, display=True):
                 mp_pose.POSE_CONNECTIONS
             )
             plt.show()   
+    if return_results:
+        return results
     return landmarks
 
 # image = '../training-data/boat/boat_1.png'
