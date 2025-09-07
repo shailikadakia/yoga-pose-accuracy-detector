@@ -8,23 +8,17 @@ from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 import joblib
 
-# -----------------------
-# Load & basic checks
-# -----------------------
+
 data = pd.read_csv("../pose_dataset.csv")
 print(data.info())
 print("Nulls per column:\n", data.isnull().sum())
 
-# TODO: if you need to drop bad rows, do it inside this function
 def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
-    # e.g., df = df.dropna()
     return df
 
 data = preprocess_data(data)
 
-# -----------------------
-# Features / Labels
-# -----------------------
+
 X = data.drop(columns=["label"])
 le = LabelEncoder()
 y = le.fit_transform(data["label"])
@@ -33,9 +27,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, stratify=y
 )
 
-# -----------------------
-# Pipeline + GridSearch
-# -----------------------
+
 pipe = Pipeline([
     ("scaler", MinMaxScaler()),
     ("knn", KNeighborsClassifier())
@@ -53,12 +45,9 @@ grid.fit(X_train, y_train)
 best_pipe = grid.best_estimator_
 print("Best params:", grid.best_params_)
 
-# -----------------------
-# Evaluate
-# -----------------------
+
 y_pred = best_pipe.predict(X_test)
 
-# Use the SAME encoder's classes for names
 target_names = le.classes_
 print(classification_report(y_test, y_pred, target_names=target_names, digits=3))
 
@@ -68,9 +57,7 @@ disp.plot(xticks_rotation="vertical", cmap="Blues")
 plt.tight_layout()
 plt.show()
 
-# -----------------------
-# Save bundle (pipeline + encoder)
-# -----------------------
+
 bundle = {"pipe": best_pipe, "label_encoder": le}
 joblib.dump(bundle, "pose_knn_bundle.pkl")
 
