@@ -1,23 +1,17 @@
 import mediapipe as mp 
 import cv2
 import matplotlib.pyplot as plt
-import matplotlib.image as pimg
-import json
-import os 
-from glob import glob
-from utils import normalize_landmarks
-
 
 # Initializing mediapipe drawing class 
 mp_drawing = mp.solutions.drawing_utils
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
 
 def detect_pose(image, display=True):
-    mp_pose = mp.solutions.pose
-    pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
     if image is None:   
         raise ValueError("Image is None. Check your path/filename.")
 
-    h, w = image.shape[:2]
+    h, w, _ = image.shape
     img_copy = image.copy()
 
     # Show the input image (optional)
@@ -60,4 +54,9 @@ def detect_pose(image, display=True):
                 mp_pose.POSE_CONNECTIONS
             )
             plt.show()   
-        return landmarks
+    return landmarks
+
+# image = '../training-data/boat/boat_1.png'
+# img = cv2.imread(image)  
+
+# print(detect_pose(img, False))
