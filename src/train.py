@@ -11,7 +11,7 @@ import joblib
 # -----------------------
 # Load & basic checks
 # -----------------------
-data = pd.read_csv("pose_dataset.csv")
+data = pd.read_csv("../pose_dataset.csv")
 print(data.info())
 print("Nulls per column:\n", data.isnull().sum())
 

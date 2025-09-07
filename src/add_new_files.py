@@ -2,7 +2,7 @@ import os
 from PIL import Image
 
 input_folder = "convert"
-output_folder = "training-data/cat-cow"
+output_folder = "../training-data/cat-cow"
 
 os.makedirs(output_folder, exist_ok=True)
 

@@ -8,8 +8,8 @@ from glob import glob
 from utils import normalize_landmarks
 
 # Establish paths
-input_root = "training-data"
-output_root = "data"
+input_root = "../training-data"
+output_root = "../data"
 os.makedirs(output_root, exist_ok=True)
 
 
