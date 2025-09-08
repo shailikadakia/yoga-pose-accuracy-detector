@@ -8,6 +8,7 @@ output_file = "../pose_dataset.csv"
 all_rows = []
 header = [f"{axis}{i}" for i in range(33) for axis in ("x","y","z")] + ["label"]
 
+# Save json files for each pose into 1 CSV
 for file in os.listdir(input_folder):
     if file.endswith(".json"):
         with open(os.path.join(input_folder, file), 'r') as f:

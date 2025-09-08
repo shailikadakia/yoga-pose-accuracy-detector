@@ -10,10 +10,8 @@ from utils import compute_feature_vector_from_points  # returns a 1D np.array of
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-# -------- load model bundle (prefer runtime; fallback to old bundle) --------
 def load_model():
     try:
-        # Preferred: clean runtime bundle (no custom functions inside)
         rt = joblib.load("pose_knn_runtime.pkl")
         print("Loaded pose_knn_runtime.pkl")
         return rt["scaler"], rt["knn"], rt["label_encoder"]
@@ -38,7 +36,7 @@ def load_model():
 
 scaler, knn, label_encoder = load_model()
 
-# -------- camera open (avoid Continuity Camera issues) --------
+# Open Camera (not iPhone camera)
 def open_camera():
     for idx in (0, 1, 2, 3):
         cap = cv2.VideoCapture(idx, cv2.CAP_AVFOUNDATION)
@@ -49,10 +47,8 @@ def open_camera():
 
 cap = open_camera()
 
-# Smooth predictions to reduce flicker
 pred_hist = deque(maxlen=8)
 
-# -------- MediaPipe Pose in video mode --------
 with mp_pose.Pose(static_image_mode=False,
                   model_complexity=1,
                   min_detection_confidence=0.5,
@@ -91,7 +87,7 @@ with mp_pose.Pose(static_image_mode=False,
             pred_hist.append(raw_label)
             smoothed = max(set(pred_hist), key=pred_hist.count)
 
-            # confidence gate (optional)
+            # confidence gate 
             label_to_show = smoothed if conf >= 0.50 else "Unknown"
 
             cv2.putText(frame, f"{label_to_show} ({conf:.2f})",

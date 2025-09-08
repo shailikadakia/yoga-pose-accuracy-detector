@@ -2,7 +2,6 @@ import mediapipe as mp
 import cv2
 import matplotlib.pyplot as plt
 
-# Initializing mediapipe drawing class 
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
@@ -11,7 +10,7 @@ def detect_pose(image, display=True, return_results=False):
     if image is None:   
         raise ValueError("Image is None. Check your path/filename.")
 
-    h, w, _ = image.shape
+    h, w, _ = image.shape # Get height and width 
     img_copy = image.copy()
 
     # Show the input image (optional)
@@ -40,6 +39,7 @@ def detect_pose(image, display=True, return_results=False):
             z_val = lm.z                 # keep as float
             landmarks.append((x_px, y_px, z_val))
 
+    # Show output image (optional)
     if display:
         # Show the 2D annotated image
         plt.figure(figsize=(6, 6))
@@ -57,8 +57,3 @@ def detect_pose(image, display=True, return_results=False):
     if return_results:
         return results
     return landmarks
-
-# image = '../training-data/boat/boat_1.png'
-# img = cv2.imread(image)  
-
-# print(detect_pose(img, False))

@@ -1,5 +1,5 @@
+# train_pose_classifier_angles.py
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.neighbors import KNeighborsClassifier
@@ -8,26 +8,27 @@ from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 import joblib
 
+IN_PATH = "../pose_angles_dataset.csv"     
+OUT_BUNDLE = "pose_knn_runtime.pkl"        
 
-data = pd.read_csv("../pose_dataset.csv")
+# Load Data
+data = pd.read_csv(IN_PATH)
 print(data.info())
 print("Nulls per column:\n", data.isnull().sum())
 
-def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
-    return df
-
-data = preprocess_data(data)
-
-
+# X = all features, y = pose label
 X = data.drop(columns=["label"])
 le = LabelEncoder()
 y = le.fit_transform(data["label"])
 
+feature_names = list(X.columns)
+
+# Split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.25, random_state=42, stratify=y
 )
 
-
+# Pipeline and grid
 pipe = Pipeline([
     ("scaler", MinMaxScaler()),
     ("knn", KNeighborsClassifier())
@@ -45,9 +46,8 @@ grid.fit(X_train, y_train)
 best_pipe = grid.best_estimator_
 print("Best params:", grid.best_params_)
 
-
+# Evaluate 
 y_pred = best_pipe.predict(X_test)
-
 target_names = le.classes_
 print(classification_report(y_test, y_pred, target_names=target_names, digits=3))
 
@@ -57,10 +57,14 @@ disp.plot(xticks_rotation="vertical", cmap="Blues")
 plt.tight_layout()
 plt.show()
 
-
-bundle = {"pipe": best_pipe, "label_encoder": le}
-joblib.dump(bundle, "pose_knn_bundle.pkl")
-
-# (Optional) sanity prints
+# Runtime Bundle
+bundle = {
+    "scaler": best_pipe.named_steps["scaler"],
+    "knn": best_pipe.named_steps["knn"],
+    "label_encoder": le,
+    "feature_names": feature_names,
+}
+joblib.dump(bundle, OUT_BUNDLE)
+print(f"✅ Saved {OUT_BUNDLE}")
 print("Encoder classes:", le.classes_)
-print("Classifier classes:", best_pipe.named_steps["knn"].classes_)  # indices expected by the KNN
+print("Classifier classes:", best_pipe.named_steps["knn"].classes_)
