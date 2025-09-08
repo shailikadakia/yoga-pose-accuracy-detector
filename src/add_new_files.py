@@ -6,7 +6,7 @@ output_folder = "../training-data/cat-cow"
 
 os.makedirs(output_folder, exist_ok=True)
 
-# 1. Find the highest existing index in the output folder
+# Find the highest existing index in the output folder
 existing_files = [f for f in os.listdir(output_folder) if f.startswith("cat-cow") and f.endswith(".png")]
 existing_indices = []
 
@@ -19,7 +19,7 @@ for f in existing_files:
 
 start_index = max(existing_indices, default=0) + 1
 
-# 2. Convert and save new JPGs with incremented names
+# Convert and save new JPGs with incremented names
 counter = start_index
 for filename in os.listdir(input_folder):
     img_path = os.path.join(input_folder, filename)
