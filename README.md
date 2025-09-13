@@ -93,3 +93,17 @@ Press **Q** to quit webcam mode.
 ## 🧘‍♀️ Supported Poses
 
 The model can classify various yoga poses based on the training data in your `training-data/` folder.
+
+---
+
+## 📊 Data Sources & Credits
+
+This project uses publicly available datasets and reference images for training and evaluation:
+
+- [Yoga Posture Dataset (Kaggle, Mrinal Tyagi)](https://www.kaggle.com/datasets/tr1gg3rtrash/yoga-posture-dataset/data?select=Adho+Mukha+Svanasana)  
+- [Yoga Poses Dataset (Kaggle, by Niharika Pandit)](https://www.kaggle.com/datasets/niharika41298/yoga-poses-dataset/data)  
+- [Yoga With Adriene YouTube Channel](https://www.youtube.com/user/yogawithadriene) — select reference images used to supplement training data.
+
+All credit goes to the original dataset creators and Yoga With Adriene.  
+This project is for **educational and research purposes only** and not intended for commercial use.
+
