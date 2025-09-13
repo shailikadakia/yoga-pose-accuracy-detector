@@ -17,10 +17,9 @@ def load_model():
         return rt["scaler"], rt["knn"], rt["label_encoder"]
     except Exception as e_runtime:
         print("Runtime bundle not found or failed to load:", e_runtime)
-        # Fallback: legacy bundle with a Pipeline that references featurize_dataframe in __main__
         try:
             import sys
-            def featurize_dataframe(X_df, *args, **kwargs):  # shim so unpickling works
+            def featurize_dataframe(X_df, *args, **kwargs):  
                 return X_df
             sys.modules['__main__'].featurize_dataframe = featurize_dataframe
 

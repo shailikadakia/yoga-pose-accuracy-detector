@@ -33,10 +33,10 @@ def detect_pose(image, display=True, return_results=False):
         )
 
         # Collect per-landmark pixel coords + z
-        for lm in results.pose_landmarks.landmark:   # <-- .landmark
+        for lm in results.pose_landmarks.landmark:   
             x_px = int(lm.x * w)
             y_px = int(lm.y * h)
-            z_val = lm.z                 # keep as float
+            z_val = lm.z                 
             landmarks.append((x_px, y_px, z_val))
 
     # Show output image (optional)

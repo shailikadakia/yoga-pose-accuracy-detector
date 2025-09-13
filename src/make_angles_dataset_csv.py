@@ -13,7 +13,7 @@ missing = [c for c in numeric_cols + ["label"] if c not in df.columns]
 if missing:
     raise ValueError(f"CSV is missing columns: {missing}")
 
-# Coerce to numeric; invalids -> NaN then drop those rows
+#  invalids -> NaN then drop those rows
 df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors="coerce")
 bad = df[numeric_cols].isna().any(axis=1)
 if bad.any():
