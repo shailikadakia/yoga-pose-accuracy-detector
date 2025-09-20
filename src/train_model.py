@@ -8,7 +8,7 @@ from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 import joblib
 
-IN_PATH = "../pose_angles_dataset.csv"     
+IN_PATH = "./pose_angles_dataset.csv"     
 OUT_BUNDLE = "pose_knn_runtime.pkl"        
 
 # Load Data
