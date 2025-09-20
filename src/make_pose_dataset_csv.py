@@ -3,7 +3,7 @@ import json
 import csv
 
 input_folder = "./data"
-output_file = "./pose_dataset.csv"
+output_file = "./src/pose_dataset.csv"
 
 all_rows = []
 header = [f"{axis}{i}" for i in range(33) for axis in ("x","y","z")] + ["label"]
