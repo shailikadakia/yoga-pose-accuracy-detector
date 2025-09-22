@@ -29,7 +29,7 @@ mp-env\Scripts\activate
 ### 3. Install Dependencies 
 ```bash
 pip install --upgrade pip
-pip install mediapipe opencv-python matplotlib scikit-learn seaborn joblib Pillow pandas numpy
+pip install mediapipe opencv-python matplotlib scikit-learn seaborn joblib Pillow pandas numpy pathlib
 ```
 
 #### Required Libraries:

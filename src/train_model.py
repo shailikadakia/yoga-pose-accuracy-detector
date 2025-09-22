@@ -7,64 +7,63 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from sklearn.pipeline import Pipeline
 import matplotlib.pyplot as plt
 import joblib
+      
+def train(input_path, output_bundle):
+  
+    # Load Data
+    data = pd.read_csv(input_path)
+    print(data.info())
+    print("Nulls per column:\n", data.isnull().sum())
 
-IN_PATH = "./src/pose_angles_dataset.csv"     
-OUT_BUNDLE = "./src/pose_knn_runtime.pkl"        
+    # X = all features, y = pose label
+    X = data.drop(columns=["label"])
+    le = LabelEncoder()
+    y = le.fit_transform(data["label"])
 
-# Load Data
-data = pd.read_csv(IN_PATH)
-print(data.info())
-print("Nulls per column:\n", data.isnull().sum())
+    feature_names = list(X.columns)
 
-# X = all features, y = pose label
-X = data.drop(columns=["label"])
-le = LabelEncoder()
-y = le.fit_transform(data["label"])
+    # Split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.25, random_state=42, stratify=y
+    )
 
-feature_names = list(X.columns)
+    # Pipeline and grid
+    pipe = Pipeline([
+        ("scaler", MinMaxScaler()),
+        ("knn", KNeighborsClassifier())
+    ])
 
-# Split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.25, random_state=42, stratify=y
-)
+    param_grid = {
+        "knn__n_neighbors": range(1, 8),
+        "knn__metric": ["euclidean", "manhattan", "minkowski"],
+        "knn__weights": ["uniform", "distance"],
+    }
 
-# Pipeline and grid
-pipe = Pipeline([
-    ("scaler", MinMaxScaler()),
-    ("knn", KNeighborsClassifier())
-])
+    grid = GridSearchCV(pipe, param_grid, cv=3, n_jobs=-1)
+    grid.fit(X_train, y_train)
 
-param_grid = {
-    "knn__n_neighbors": range(1, 8),
-    "knn__metric": ["euclidean", "manhattan", "minkowski"],
-    "knn__weights": ["uniform", "distance"],
-}
+    best_pipe = grid.best_estimator_
+    print("Best params:", grid.best_params_)
 
-grid = GridSearchCV(pipe, param_grid, cv=3, n_jobs=-1)
-grid.fit(X_train, y_train)
+    # Evaluate 
+    y_pred = best_pipe.predict(X_test)
+    target_names = le.classes_
+    print(classification_report(y_test, y_pred, target_names=target_names, digits=3))
 
-best_pipe = grid.best_estimator_
-print("Best params:", grid.best_params_)
+    cm = confusion_matrix(y_test, y_pred, labels=range(len(target_names)))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=target_names)
+    disp.plot(xticks_rotation="vertical", cmap="Blues")
+    plt.tight_layout()
+    plt.show()
 
-# Evaluate 
-y_pred = best_pipe.predict(X_test)
-target_names = le.classes_
-print(classification_report(y_test, y_pred, target_names=target_names, digits=3))
-
-cm = confusion_matrix(y_test, y_pred, labels=range(len(target_names)))
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=target_names)
-disp.plot(xticks_rotation="vertical", cmap="Blues")
-plt.tight_layout()
-plt.show()
-
-# Runtime Bundle
-bundle = {
-    "scaler": best_pipe.named_steps["scaler"],
-    "knn": best_pipe.named_steps["knn"],
-    "label_encoder": le,
-    "feature_names": feature_names,
-}
-joblib.dump(bundle, OUT_BUNDLE)
-print(f"✅ Saved {OUT_BUNDLE}")
-print("Encoder classes:", le.classes_)
-print("Classifier classes:", best_pipe.named_steps["knn"].classes_)
+    # Runtime Bundle
+    bundle = {
+        "scaler": best_pipe.named_steps["scaler"],
+        "knn": best_pipe.named_steps["knn"],
+        "label_encoder": le,
+        "feature_names": feature_names,
+    }
+    joblib.dump(bundle, output_bundle)
+    print(f"✅ Saved {output_bundle}")
+    print("Encoder classes:", le.classes_)
+    print("Classifier classes:", best_pipe.named_steps["knn"].classes_)
