@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from utils import row_to_points33, compute_feature_vector_from_points, FEATURE_NAMES
 
-IN_PATH  = "../pose_dataset.csv"         
-OUT_PATH = "../pose_angles_dataset.csv"  
+IN_PATH  = "./src/pose_dataset.csv"         
+OUT_PATH = "./src/pose_angles_dataset.csv"  
 
 
 df = pd.read_csv(IN_PATH)

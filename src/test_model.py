@@ -12,7 +12,7 @@ mp_drawing = mp.solutions.drawing_utils
 
 def load_model():
     try:
-        rt = joblib.load("pose_knn_runtime.pkl")
+        rt = joblib.load("./src/pose_knn_runtime.pkl")
         print("Loaded pose_knn_runtime.pkl")
         return rt["scaler"], rt["knn"], rt["label_encoder"]
     except Exception as e_runtime:
@@ -23,7 +23,7 @@ def load_model():
                 return X_df
             sys.modules['__main__'].featurize_dataframe = featurize_dataframe
 
-            bundle = joblib.load("pose_knn_bundle.pkl")
+            bundle = joblib.load("./src/pose_knn_bundle.pkl")
             print("Loaded legacy pose_knn_bundle.pkl (using scaler+knn from its pipeline)")
             pipe = bundle["pipe"]
             scaler = pipe.named_steps["scaler"]
