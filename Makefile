@@ -1,8 +1,8 @@
 .DEFAULT_GOAL := all
 
 venv:  
-	python -m venv .venv
-	@echo "Created venv at .venv"
+	python -m venv venv
+	@echo "Created venv at venv"
 
 install: ## Install project dependencies
 	pip install --upgrade pip
