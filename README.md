@@ -28,8 +28,7 @@ mp-env\Scripts\activate
 
 ### 3. Install Dependencies 
 ```bash
-pip install --upgrade pip
-pip install mediapipe opencv-python matplotlib scikit-learn seaborn joblib Pillow pandas numpy
+make install
 ```
 
 #### Required Libraries:
@@ -44,40 +43,12 @@ pip install mediapipe opencv-python matplotlib scikit-learn seaborn joblib Pillo
 - **numpy** - Numerical computing and array operations
 
 ### 4. Running Scripts 
-
-#### Data Processing:
 ```bash
-# Extract pose landmarks from training images
-python src/load_yoga_training_data.py
-
-# Convert landmark data to CSV format
-python src/make_pose_dataset_csv.py
-
-# Create angle-based feature dataset
-python src/make_angles_dataset_csv.py
+make prepare   # Load training data and build CSV datasets
+make train     # Train the KNN model (runs prepare first if needed)
+make test      # Run live webcam detection (press 'q' to quit)
+make clean     # Remove generated files and caches
 ```
-
-#### Training and Testing:
-```bash
-# Train the pose classification model
-python src/train_model.py
-
-# Test model with live webcam input
-python src/test_model.py
-```
-
-#### Utilities:
-```bash
-# Add new training images
-python src/add_new_files.py
-
-# Detect pose in single image
-python src/detect_image.py
-```
-
-Press **Q** to quit webcam mode.
-
----
 
 ## 📁 Project Structure
 
