@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils import row_to_points33, compute_feature_vector_from_points, FEATURE_NAMES
+from .utils import row_to_points33, compute_feature_vector_from_points, FEATURE_NAMES
 
 def angles_dataset(input_file, output_file):
     df = pd.read_csv(input_file)

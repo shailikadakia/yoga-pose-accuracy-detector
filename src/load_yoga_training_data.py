@@ -2,7 +2,7 @@ import cv2
 import json
 import os 
 from glob import glob
-from detect_image import detect_pose
+from .detect_image import detect_pose
 
 def load_training_date(input_folder, output_folder):
   os.makedirs(output_folder, exist_ok=True)
