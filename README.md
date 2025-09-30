@@ -73,9 +73,9 @@ We use a K-Nearest Neighbors (KNN) classifier trained on pose-angle features der
 ### Hyperparameter search.
 Training uses GridSearchCV with 3-fold cross-validation over:
 
-`n_neighbors: 1–7`
-`metric: euclidean, manhattan, minkowski`
-`weights: uniform, distance`
+* `n_neighbors: 1–7`
+* `metric: euclidean, manhattan, minkowski`
+* `weights: uniform, distance`
 
 ### Training procedure.
 1. Build datasets:
