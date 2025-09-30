@@ -54,6 +54,7 @@ def train(input_path, output_bundle):
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=target_names)
     disp.plot(xticks_rotation="vertical", cmap="Blues")
     plt.tight_layout()
+    plt.savefig("assets/confusion_matrix.png")  # save figure to repo
     plt.show()
 
     # Runtime Bundle
