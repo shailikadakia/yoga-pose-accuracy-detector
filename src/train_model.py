@@ -44,6 +44,7 @@ def train(input_path, output_bundle):
 
     best_pipe = grid.best_estimator_
     print("Best params:", grid.best_params_)
+    print("Best score:", grid.best_score_)
 
     # Evaluate 
     y_pred = best_pipe.predict(X_test)
