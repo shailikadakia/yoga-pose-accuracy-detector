@@ -63,8 +63,8 @@ make clean     # Remove generated files and caches
 
 ## 🧠 Model & Training
 We use a K-Nearest Neighbors (KNN) classifier trained on pose-angle features derived from MediaPipe landmarks. Each image/frame is converted into a compact vector of body-relative joint angles (e.g., elbows, knees, hips, shoulders, spine). Angles make the model more robust to scale and camera position than raw coordinates.
-**
-Model pipeline**
+
+**Model pipeline**
 - MinMaxScaler – normalizes all angle features into the [0, 1] range
 - KNeighborsClassifier – predicts the pose class based on the nearest labeled examples in this feature space
 
@@ -88,7 +88,7 @@ Best parameters found:
 - metric = manhattan
 - weights = distance
 
-**📂 Training Procedure**
+## **📂 Training Procedure**
 1. Dataset construction
 - pose_dataset.csv → raw MediaPipe landmarks
 - pose_angles_dataset.csv → engineered joint-angle features + pose labels
