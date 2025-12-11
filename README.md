@@ -62,33 +62,54 @@ make clean     # Remove generated files and caches
 ---
 
 ## 🧠 Model & Training
+We use a K-Nearest Neighbors (KNN) classifier trained on pose-angle features derived from MediaPipe landmarks. Each image/frame is converted into a compact vector of body-relative joint angles (e.g., elbows, knees, hips, shoulders, spine). Angles make the model more robust to scale and camera position than raw coordinates.
+**
+Model pipeline**
+- MinMaxScaler – normalizes all angle features into the [0, 1] range
+- KNeighborsClassifier – predicts the pose class based on the nearest labeled examples in this feature space
 
-We use a K-Nearest Neighbors (KNN) classifier trained on pose-angle features derived from MediaPipe landmarks. Each image/frame is converted into a compact vector of body-relative joint angles (e.g., elbows, knees, hips, shoulders, spine). Angles make the model more robust to scale and camera position compared to raw coordinates.
+**🔍 Hyperparameter Search (with 3-Fold Cross-Validation)**
+We use GridSearchCV with 3-fold cross-validation to select optimal KNN settings.
+The search space includes:
+- n_neighbors: 1–7
+- metric: euclidean, manhattan, minkowski
+- weights: uniform, distance
 
-### Model pipeline.
+**How the 3-fold CV works (brief)**
+After a 75% train / 25% test split (stratified by pose), the training portion is divided into 3 folds (A, B, C). Cross-validation loop (for each hyperparameter combo):
+- Round 1: Train on Folds B + C, validate on Fold A
+- Round 2: Train on Folds A + C, validate on Fold B
+- Round 3: Train on Folds A + B, validate on Fold C
+- Record the validation accuracy for each round and compute the mean validation score.
+- GridSearchCV selects the configuration with the highest mean validation score.
 
-`MinMaxScaler` – normalizes features to 0, 1
-`KNeighborsClassifier` – predicts pose class based on nearest labeled examples in feature space
+Best parameters found:
+- n_neighbors = 4
+- metric = manhattan
+- weights = distance
 
-### Hyperparameter search.
-Training uses GridSearchCV with 3-fold cross-validation over:
+**📂 Training Procedure**
+1. Dataset construction
+- pose_dataset.csv → raw MediaPipe landmarks
+- pose_angles_dataset.csv → engineered joint-angle features + pose labels
 
-* `n_neighbors: 1–7`
-* `metric: euclidean, manhattan, minkowski`
-* `weights: uniform, distance`
+2. Train/test split
+- 75% train / 25% test, stratified by label
 
-### Training procedure.
-1. Build datasets:
-  * pose_dataset.csv – raw landmarks
-  * pose_angles_dataset.csv – angle features + labels
+3. Hyperparameter tuning
+- GridSearchCV (3-fold CV) selects the best KNN settings
 
-2. Split data: 75% train / 25% test, stratified by label
+4. Final training & evaluation
+- Retrain best model on the full training set
+- Evaluate on the 25% held-out test set
+- Report classification metrics and confusion matrix
 
-3. Fit the pipeline with grid search
-
-4. Evaluate on the test set with classification report + confusion matrix
-
-5. Save a lightweight runtime bundle (pose_knn_runtime.pkl) containing: `scaler`, `knn`, `label_encoder`, `feature_names`
+5. Runtime bundle export
+- Save pose_knn_runtime.pkl containing:
+- scaler
+- trained knn
+- label_encoder
+- feature_names
 
 ### Evaluation Example
 #### Results
