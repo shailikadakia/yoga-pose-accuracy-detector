@@ -89,22 +89,23 @@ Best parameters found:
 - weights = distance
 
 ## **📂 Training Procedure**
-1. Dataset construction
+
+**1. Dataset construction**
 - pose_dataset.csv → raw MediaPipe landmarks
 - pose_angles_dataset.csv → engineered joint-angle features + pose labels
 
-2. Train/test split
+**2. Train/test split**
 - 75% train / 25% test, stratified by label
 
-3. Hyperparameter tuning
+**3. Hyperparameter tuning**
 - GridSearchCV (3-fold CV) selects the best KNN settings
 
-4. Final training & evaluation
+**4. Final training & evaluation**
 - Retrain best model on the full training set
 - Evaluate on the 25% held-out test set
 - Report classification metrics and confusion matrix
 
-5. Runtime bundle export
+**5. Runtime bundle export**
 - Save pose_knn_runtime.pkl containing:
 - scaler
 - trained knn
